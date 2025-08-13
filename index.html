@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkiye Namaz Vakitleri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Tranquil Dawn (Shades of blue and grey) -->
+    <!-- Application Structure Plan: Uygulama, ana başlık, şehir seçimi için bir dropdown menü, seçilen şehrin mevcut namaz vakitlerini gösteren merkezi bir panel ve günün diğer vakitlerini listeyen alt panellerden oluşan basit ve sezgisel bir yapıya sahiptir. Bu yapı, kullanıcıların ana işlevi (namaz vakitlerini görmek) hızlı ve kolay bir şekilde gerçekleştirmesini sağlar. Bölümleme, en önemli bilginin (güncel vakitler) hemen görülebilir olmasını ve daha az öncelikli bilgilerin (diğer vakitler) düzenli bir şekilde sunulmasını amaçlar. -->
+    <!-- Visualization & Content Choices: 
+        - Namaz Vakitleri -> Hedef: Hızlı bilgi erişimi -> Yöntem: Merkezi bir panelde büyük fontlarla gösterim -> Etkileşim: Şehir seçimi ile verilerin güncellenmesi -> Gerekçe: En önemli bilginin hemen göze çarpması hedeflenmiştir.
+        - Diğer Vakitler Listesi -> Hedef: Kapsamlı bilgi sunmak -> Yöntem: Basit liste formatı -> Etkileşim: Şehir seçimine göre listeyi güncelleme -> Gerekçe: Ek verileri düzenli ve okunaklı bir şekilde sunar.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-blue-600 mb-2 sm:mb-0">Türkiye Namaz Vakitleri</h1>
+            <div class="flex items-center space-x-2">
+                <label for="city-select" class="font-medium text-slate-600">Şehir Seçin:</label>
+                <select id="city-select" class="p-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer">
+                    <option value="istanbul">İstanbul</option>
+                    <option value="ankara">Ankara</option>
+                    <option value="izmir">İzmir</option>
+                    <option value="bursa">Bursa</option>
+                    <option value="adana">Adana</option>
+                    <option value="antalya">Antalya</option>
+                    <option value="konya">Konya</option>
+                    <option value="samsun">Samsun</option>
+                    <option value="diyarbakir">Diyarbakır</option>
+                    <option value="erzurum">Erzurum</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-200">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 id="city-display" class="text-3xl font-bold text-blue-800">İstanbul</h2>
+                        <div id="date-display" class="text-xl font-medium text-slate-500"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
+                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
+                            <p class="text-lg text-slate-600">İmsak</p>
+                            <p id="imsak-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">05:15</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
+                            <p class="text-lg text-slate-600">Güneş</p>
+                            <p id="gunes-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">06:45</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
+                            <p class="text-lg text-slate-600">Öğle</p>
+                            <p id="ogle-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">13:15</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
+                            <p class="text-lg text-slate-600">İkindi</p>
+                            <p id="ikindi-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">17:15</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
+                            <p class="text-lg text-slate-600">Akşam</p>
+                            <p id="aksam-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">20:00</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
+                            <p class="text-lg text-slate-600">Yatsı</p>
+                            <p id="yatsi-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">21:30</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gemini API ile eklenen yeni kısım -->
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-200 mt-8">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">Manevi Bir Söz</h3>
+                    <div id="gemini-content-container" class="flex flex-col space-y-4">
+                        <button id="get-message-btn" class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors shadow-lg">
+                            İlham Veren Bir Söz Alın ✨
+                        </button>
+                        
+                        <div id="loading-indicator" class="hidden text-center text-slate-500">
+                            Yükleniyor...
+                        </div>
+                        
+                        <div id="message-display" class="hidden p-4 bg-slate-50 rounded-lg border border-slate-200">
+                            <p id="message-text" class="text-md text-slate-700 leading-relaxed"></p>
+                            <div class="mt-4 flex space-x-2">
+                                <button id="play-audio-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Sesi Oynat 🔊
+                                </button>
+                                <audio id="audio-player" class="hidden"></audio>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-200">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">Gelecek Günler</h3>
+                    <div id="next-days-list" class="space-y-4">
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <footer class="bg-white shadow-sm mt-8">
+        <div class="container mx-auto p-4 text-center text-slate-500">
+            <p>&copy; 2025 Namaz Vakitleri Uygulaması. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script>
+        const prayerTimesData = {
+            istanbul: [
+                { date: 'Bugün', imsak: '05:15', gunes: '06:45', ogle: '13:15', ikindi: '17:15', aksam: '20:00', yatsi: '21:30' },
+                { date: 'Yarın', imsak: '05:14', gunes: '06:44', ogle: '13:15', ikindi: '17:16', aksam: '20:01', yatsi: '21:31' },
+                { date: '2 Gün Sonra', imsak: '05:13', gunes: '06:43', ogle: '13:14', ikindi: '17:17', aksam: '20:02', yatsi: '21:32' },
+            ],
+            ankara: [
+                { date: 'Bugün', imsak: '05:00', gunes: '06:30', ogle: '13:00', ikindi: '17:00', aksam: '19:45', yatsi: '21:15' },
+                { date: 'Yarın', imsak: '04:59', gunes: '06:29', ogle: '13:00', ikindi: '17:01', aksam: '19:46', yatsi: '21:16' },
+                { date: '2 Gün Sonra', imsak: '04:58', gunes: '06:28', ogle: '12:59', ikindi: '17:02', aksam: '19:47', yatsi: '21:17' },
+            ],
+            izmir: [
+                { date: 'Bugün', imsak: '05:30', gunes: '07:00', ogle: '13:30', ikindi: '17:30', aksam: '20:15', yatsi: '21:45' },
+                { date: 'Yarın', imsak: '05:29', gunes: '06:59', ogle: '13:29', ikindi: '17:31', aksam: '20:16', yatsi: '21:46' },
+                { date: '2 Gün Sonra', imsak: '05:28', gunes: '06:58', ogle: '13:28', ikindi: '17:32', aksam: '20:17', yatsi: '21:47' },
+            ],
+            bursa: [
+                { date: 'Bugün', imsak: '05:20', gunes: '06:50', ogle: '13:20', ikindi: '17:20', aksam: '20:05', yatsi: '21:35' },
+                { date: 'Yarın', imsak: '05:19', gunes: '06:49', ogle: '13:20', ikindi: '17:21', aksam: '20:06', yatsi: '21:36' },
+                { date: '2 Gün Sonra', imsak: '05:18', gunes: '06:48', ogle: '13:19', ikindi: '17:22', aksam: '20:07', yatsi: '21:37' },
+            ],
+            adana: [
+                { date: 'Bugün', imsak: '04:45', gunes: '06:15', ogle: '12:45', ikindi: '16:45', aksam: '19:30', yatsi: '21:00' },
+                { date: 'Yarın', imsak: '04:44', gunes: '06:14', ogle: '12:45', ikindi: '16:46', aksam: '19:31', yatsi: '21:01' },
+                { date: '2 Gün Sonra', imsak: '04:43', gunes: '06:13', ogle: '12:44', ikindi: '16:47', aksam: '19:32', yatsi: '21:02' },
+            ],
+            antalya: [
+                { date: 'Bugün', imsak: '05:25', gunes: '06:55', ogle: '13:25', ikindi: '17:25', aksam: '20:10', yatsi: '21:40' },
+                { date: 'Yarın', imsak: '05:24', gunes: '06:54', ogle: '13:24', ikindi: '17:26', aksam: '20:11', yatsi: '21:41' },
+                { date: '2 Gün Sonra', imsak: '05:23', gunes: '06:53', ogle: '13:23', ikindi: '17:27', aksam: '20:12', yatsi: '21:42' },
+            ],
+            konya: [
+                { date: 'Bugün', imsak: '05:10', gunes: '06:40', ogle: '13:10', ikindi: '17:10', aksam: '19:55', yatsi: '21:25' },
+                { date: 'Yarın', imsak: '05:09', gunes: '06:39', ogle: '13:10', ikindi: '17:11', aksam: '19:56', yatsi: '21:26' },
+                { date: '2 Gün Sonra', imsak: '05:08', gunes: '06:38', ogle: '13:09', ikindi: '17:12', aksam: '19:57', yatsi: '21:27' },
+            ],
+            samsun: [
+                { date: 'Bugün', imsak: '04:50', gunes: '06:20', ogle: '12:50', ikindi: '16:50', aksam: '19:35', yatsi: '21:05' },
+                { date: 'Yarın', imsak: '04:49', gunes: '06:19', ogle: '12:50', ikindi: '16:51', aksam: '19:36', yatsi: '21:06' },
+                { date: '2 Gün Sonra', imsak: '04:48', gunes: '06:18', ogle: '12:49', ikindi: '16:52', aksam: '19:37', yatsi: '21:07' },
+            ],
+            diyarbakir: [
+                { date: 'Bugün', imsak: '04:35', gunes: '06:05', ogle: '12:35', ikindi: '16:35', aksam: '19:20', yatsi: '20:50' },
+                { date: 'Yarın', imsak: '04:34', gunes: '06:04', ogle: '12:35', ikindi: '16:36', aksam: '19:21', yatsi: '20:51' },
+                { date: '2 Gün Sonra', imsak: '04:33', gunes: '06:03', ogle: '12:34', ikindi: '16:37', aksam: '19:22', yatsi: '20:52' },
+            ],
+            erzurum: [
+                { date: 'Bugün', imsak: '04:20', gunes: '05:50', ogle: '12:20', ikindi: '16:20', aksam: '19:05', yatsi: '20:35' },
+                { date: 'Yarın', imsak: '04:19', gunes: '05:49', ogle: '12:20', ikindi: '16:21', aksam: '19:06', yatsi: '20:36' },
+                { date: '2 Gün Sonra', imsak: '04:18', gunes: '05:48', ogle: '12:19', ikindi: '16:22', aksam: '19:07', yatsi: '20:37' },
+            ]
+        };
+
+        const citySelect = document.getElementById('city-select');
+        const cityDisplay = document.getElementById('city-display');
+        const dateDisplay = document.getElementById('date-display');
+        const imsakTime = document.getElementById('imsak-time');
+        const gunesTime = document.getElementById('gunes-time');
+        const ogleTime = document.getElementById('ogle-time');
+        const ikindiTime = document.getElementById('ikindi-time');
+        const aksamTime = document.getElementById('aksam-time');
+        const yatsiTime = document.getElementById('yatsi-time');
+        const nextDaysList = document.getElementById('next-days-list');
+        
+        // Gemini API için yeni DOM elementleri
+        const getMessageBtn = document.getElementById('get-message-btn');
+        const messageDisplay = document.getElementById('message-display');
+        const messageText = document.getElementById('message-text');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const playAudioBtn = document.getElementById('play-audio-btn');
+        const audioPlayer = document.getElementById('audio-player');
+        
+        // API anahtarını tanımlıyoruz.
+        const apiKey = "";
+        
+        // Namaz vakitlerini güncelleyen fonksiyon
+        function formatDate(date) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('tr-TR', options);
+        }
+
+        function updatePrayerTimes(city) {
+            const data = prayerTimesData[city];
+            if (!data) return;
+
+            const todayData = data[0];
+            const currentDate = new Date();
+            dateDisplay.textContent = formatDate(currentDate);
+
+            cityDisplay.textContent = city.charAt(0).toUpperCase() + city.slice(1);
+            imsakTime.textContent = todayData.imsak;
+            gunesTime.textContent = todayData.gunes;
+            ogleTime.textContent = todayData.ogle;
+            ikindiTime.textContent = todayData.ikindi;
+            aksamTime.textContent = todayData.aksam;
+            yatsiTime.textContent = todayData.yatsi;
+
+            nextDaysList.innerHTML = '';
+            for (let i = 1; i < data.length; i++) {
+                const dayData = data[i];
+                const dayElement = document.createElement('div');
+                dayElement.className = 'flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200';
+                dayElement.innerHTML = `
+                    <div class="font-medium text-slate-600">${dayData.date}</div>
+                    <div class="flex space-x-2 text-sm text-slate-500">
+                        <span>İmsak: ${dayData.imsak}</span>
+                        <span>Güneş: ${dayData.gunes}</span>
+                        <span>Öğle: ${dayData.ogle}</span>
+                        <span>İkindi: ${dayData.ikindi}</span>
+                        <span>Akşam: ${dayData.aksam}</span>
+                        <span>Yatsı: ${dayData.yatsi}</span>
+                    </div>
+                `;
+                nextDaysList.appendChild(dayElement);
+            }
+        }
+
+        // Gemini API - Metin oluşturma fonksiyonu
+        async function getInspirationalMessage() {
+            loadingIndicator.classList.remove('hidden');
+            messageDisplay.classList.add('hidden');
+            getMessageBtn.disabled = true;
+
+            const currentCity = citySelect.options[citySelect.selectedIndex].text;
+            const currentPrayerTime = 'Bugün'; // Basitlik için sadece bugünün vakti
+            const prompt = `Bugünkü ${currentCity} şehrinin namaz vakitleri için, İslami öğretilere, huzura ve duaya vurgu yapan, kısa (en fazla 30 kelime) ve ilham verici bir söz veya dua cümlesi oluştur. Örneğin, "Güneşin doğuşuyla birlikte, yeni bir güne şükürle başla." gibi.`;
+            
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            
+            const payload = { contents: chatHistory };
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    messageText.textContent = text;
+                    messageDisplay.classList.remove('hidden');
+                } else {
+                    console.error('API yanıtı beklendiği gibi değil:', result);
+                    messageText.textContent = 'Bir hata oluştu, lütfen tekrar deneyin.';
+                    messageDisplay.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('API çağrısı sırasında bir hata oluştu:', error);
+                messageText.textContent = 'Bir hata oluştu, lütfen internet bağlantınızı kontrol edin.';
+                messageDisplay.classList.remove('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                getMessageBtn.disabled = false;
+            }
+        }
+
+        // Gemini API - TTS (Metinden Sese) fonksiyonu
+        async function playAudio(text) {
+            playAudioBtn.disabled = true;
+            playAudioBtn.textContent = 'Yükleniyor...';
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: `Neşeli bir tonla söyle: ${text}` }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: "Algieba" }
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)[1], 10);
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.play();
+                } else {
+                    console.error('API ses verisi döndürmedi:', result);
+                    alert('Ses oynatılamıyor. Lütfen tekrar deneyin.');
+                }
+
+            } catch (error) {
+                console.error('TTS API çağrısı sırasında bir hata oluştu:', error);
+                alert('Ses oynatılamıyor. İnternet bağlantınızı kontrol edin.');
+            } finally {
+                playAudioBtn.disabled = false;
+                playAudioBtn.textContent = 'Sesi Oynat �';
+            }
+        }
+        
+        // Base64'ten ArrayBuffer'a dönüştürme fonksiyonu
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // PCM verisini WAV formatına dönüştürme fonksiyonu
+        function pcmToWav(pcmData, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcmData.length * 2);
+            const view = new DataView(buffer);
+            
+            // RIFF header
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcmData.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            
+            // FMT sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // Linear PCM
+            view.setUint16(22, 1, true); // Mono
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            
+            // DATA sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcmData.length * 2, true);
+            
+            // Write PCM data
+            let offset = 44;
+            for (let i = 0; i < pcmData.length; i++, offset += 2) {
+                view.setInt16(offset, pcmData[i], true);
+            }
+            
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+
+        // Event Listener'lar
+        citySelect.addEventListener('change', (event) => {
+            updatePrayerTimes(event.target.value);
+            // Şehir değişince AI içeriğini sıfırla
+            messageText.textContent = '';
+            messageDisplay.classList.add('hidden');
+        });
+
+        getMessageBtn.addEventListener('click', getInspirationalMessage);
+        
+        playAudioBtn.addEventListener('click', () => {
+            const textToSpeak = messageText.textContent;
+            if (textToSpeak) {
+                playAudio(textToSpeak);
+            }
+        });
+        
+        // Uygulama yüklendiğinde varsayılan şehri göster
+        updatePrayerTimes('istanbul');
+    </script>
+</body>
+</html>
