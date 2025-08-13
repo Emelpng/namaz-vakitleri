@@ -8,27 +8,44 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Chosen Palette: Tranquil Dawn (Shades of blue and grey) -->
-    <!-- Application Structure Plan: Uygulama, ana başlık, şehir seçimi için bir dropdown menü, seçilen şehrin mevcut namaz vakitlerini gösteren merkezi bir panel ve günün diğer vakitlerini listeyen alt panellerden oluşan basit ve sezgisel bir yapıya sahiptir. Bu yapı, kullanıcıların ana işlevi (namaz vakitlerini görmek) hızlı ve kolay bir şekilde gerçekleştirmesini sağlar. Bölümleme, en önemli bilginin (güncel vakitler) hemen görülebilir olmasını ve daha az öncelikli bilgilerin (diğer vakitler) düzenli bir şekilde sunulmasını amaçlar. -->
-    <!-- Visualization & Content Choices: 
-        - Namaz Vakitleri -> Hedef: Hızlı bilgi erişimi -> Yöntem: Merkezi bir panelde büyük fontlarla gösterim -> Etkileşim: Şehir seçimi ile verilerin güncellenmesi -> Gerekçe: En önemli bilginin hemen göze çarpması hedeflenmiştir.
-        - Diğer Vakitler Listesi -> Hedef: Kapsamlı bilgi sunmak -> Yöntem: Basit liste formatı -> Etkileşim: Şehir seçimine göre listeyi güncelleme -> Gerekçe: Ek verileri düzenli ve okunaklı bir şekilde sunar.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
+    <!-- Google AdSense script tag'inizi buraya yapıştırın. -->
+    <!-- Örnek: <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx" crossorigin="anonymous"></script> -->
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #F8FAFC; 
+        }
+        .prayer-time-card {
+            background: linear-gradient(135deg, #EBF8FF 0%, #DFF2FF 100%);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .prayer-time-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .message-box {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
 
-    <header class="bg-white shadow-sm">
-        <div class="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
-            <h1 class="text-3xl font-extrabold text-blue-600 mb-2 sm:mb-0">Türkiye Namaz Vakitleri</h1>
+    <header class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-4 sm:mb-0">
+                <i class="fas fa-mosque text-4xl text-blue-600"></i>
+                <h1 class="text-4xl font-extrabold text-blue-800">Namaz Vakitleri</h1>
+            </div>
             <div class="flex items-center space-x-2">
-                <label for="city-select" class="font-medium text-slate-600">Şehir Seçin:</label>
-                <select id="city-select" class="p-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer">
+                <label for="city-select" class="font-medium text-slate-600 text-lg">Şehir Seçin:</label>
+                <select id="city-select" class="p-2 border border-blue-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer text-lg">
                     <option value="istanbul">İstanbul</option>
                     <option value="ankara">Ankara</option>
                     <option value="izmir">İzmir</option>
@@ -48,68 +65,90 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             <div class="lg:col-span-2">
-                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-200">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 id="city-display" class="text-3xl font-bold text-blue-800">İstanbul</h2>
-                        <div id="date-display" class="text-xl font-medium text-slate-500"></div>
+                <div class="bg-white p-6 md:p-10 rounded-3xl shadow-xl border border-slate-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+                        <div>
+                            <h2 id="city-display" class="text-4xl font-bold text-blue-900">İstanbul</h2>
+                            <div id="date-display" class="text-lg font-medium text-slate-500 mt-1"></div>
+                        </div>
                     </div>
                     
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
-                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
-                            <p class="text-lg text-slate-600">İmsak</p>
-                            <p id="imsak-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">05:15</p>
+                        <div class="prayer-time-card p-6 rounded-2xl shadow-inner border border-blue-200">
+                            <p class="text-lg text-slate-600 font-semibold">İmsak</p>
+                            <p id="imsak-time" class="text-4xl md:text-5xl font-extrabold text-blue-700 mt-2">05:15</p>
                         </div>
-                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
-                            <p class="text-lg text-slate-600">Güneş</p>
-                            <p id="gunes-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">06:45</p>
+                        <div class="prayer-time-card p-6 rounded-2xl shadow-inner border border-blue-200">
+                            <p class="text-lg text-slate-600 font-semibold">Güneş</p>
+                            <p id="gunes-time" class="text-4xl md:text-5xl font-extrabold text-blue-700 mt-2">06:45</p>
                         </div>
-                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
-                            <p class="text-lg text-slate-600">Öğle</p>
-                            <p id="ogle-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">13:15</p>
+                        <div class="prayer-time-card p-6 rounded-2xl shadow-inner border border-blue-200">
+                            <p class="text-lg text-slate-600 font-semibold">Öğle</p>
+                            <p id="ogle-time" class="text-4xl md:text-5xl font-extrabold text-blue-700 mt-2">13:15</p>
                         </div>
-                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
-                            <p class="text-lg text-slate-600">İkindi</p>
-                            <p id="ikindi-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">17:15</p>
+                        <div class="prayer-time-card p-6 rounded-2xl shadow-inner border border-blue-200">
+                            <p class="text-lg text-slate-600 font-semibold">İkindi</p>
+                            <p id="ikindi-time" class="text-4xl md:text-5xl font-extrabold text-blue-700 mt-2">17:15</p>
                         </div>
-                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
-                            <p class="text-lg text-slate-600">Akşam</p>
-                            <p id="aksam-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">20:00</p>
+                        <div class="prayer-time-card p-6 rounded-2xl shadow-inner border border-blue-200">
+                            <p class="text-lg text-slate-600 font-semibold">Akşam</p>
+                            <p id="aksam-time" class="text-4xl md:text-5xl font-extrabold text-blue-700 mt-2">20:00</p>
                         </div>
-                        <div class="bg-blue-50 p-4 rounded-xl shadow-inner border border-blue-100">
-                            <p class="text-lg text-slate-600">Yatsı</p>
-                            <p id="yatsi-time" class="text-3xl md:text-4xl font-extrabold text-blue-700 mt-1">21:30</p>
+                        <div class="prayer-time-card p-6 rounded-2xl shadow-inner border border-blue-200">
+                            <p class="text-lg text-slate-600 font-semibold">Yatsı</p>
+                            <p id="yatsi-time" class="text-4xl md:text-5xl font-extrabold text-blue-700 mt-2">21:30</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Gemini API ile eklenen yeni kısım -->
-                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-200 mt-8">
-                    <h3 class="text-2xl font-bold text-blue-800 mb-4">Manevi Bir Söz</h3>
+                <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-200 mt-8">
+                    <h3 class="text-2xl font-bold text-blue-900 mb-4 flex items-center space-x-2">
+                        <i class="fas fa-hand-holding-heart text-blue-600"></i>
+                        <span>Manevi Bir Söz</span>
+                    </h3>
                     <div id="gemini-content-container" class="flex flex-col space-y-4">
-                        <button id="get-message-btn" class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors shadow-lg">
+                        <button id="get-message-btn" class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors shadow-lg">
                             İlham Veren Bir Söz Alın ✨
                         </button>
                         
                         <div id="loading-indicator" class="hidden text-center text-slate-500">
-                            Yükleniyor...
+                            <i class="fas fa-spinner fa-spin mr-2"></i> Yükleniyor...
                         </div>
                         
-                        <div id="message-display" class="hidden p-4 bg-slate-50 rounded-lg border border-slate-200">
-                            <p id="message-text" class="text-md text-slate-700 leading-relaxed"></p>
+                        <div id="message-display" class="hidden p-6 bg-slate-50 rounded-xl border border-slate-200 message-box">
+                            <p id="message-text" class="text-lg text-slate-700 leading-relaxed italic"></p>
                             <div class="mt-4 flex space-x-2">
-                                <button id="play-audio-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                    Sesi Oynat 🔊
+                                <button id="play-audio-btn" class="bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl hover:bg-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2">
+                                    <i class="fas fa-volume-up"></i>
+                                    <span>Sesi Oynat</span>
                                 </button>
                                 <audio id="audio-player" class="hidden"></audio>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- AdSense reklam kodu için alan -->
+                <div class="mt-8 flex justify-center">
+                    <div class="bg-white p-4 rounded-3xl shadow-xl border border-slate-200 w-full max-w-xl text-center">
+                        <!-- Google AdSense reklam birimi kodunuzu buraya yapıştırın. -->
+                        <!-- Reklam biriminizin boyutuna uygun olarak stil ayarlarını yapabilirsiniz. -->
+                        <!-- Örnek: <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-xxxxxxxxxxxxxxxx" data-ad-slot="yyyyyyyyyyy" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+                        <!-- <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+                        <div class="p-12 text-slate-400 border border-dashed border-slate-300 rounded-md text-sm">
+                            Reklamınız burada görüntülenecektir.
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="lg:col-span-1">
-                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-200">
-                    <h3 class="text-2xl font-bold text-blue-800 mb-4">Gelecek Günler</h3>
+                <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-200">
+                    <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center space-x-2">
+                        <i class="fas fa-calendar-alt text-blue-600"></i>
+                        <span>Gelecek Günler</span>
+                    </h3>
                     <div id="next-days-list" class="space-y-4">
                         
                     </div>
@@ -119,9 +158,10 @@
         </div>
     </main>
 
-    <footer class="bg-white shadow-sm mt-8">
-        <div class="container mx-auto p-4 text-center text-slate-500">
-            <p>&copy; 2025 Namaz Vakitleri Uygulaması. Tüm hakları saklıdır.</p>
+    <footer class="bg-white shadow-lg mt-8">
+        <div class="container mx-auto p-6 text-center text-slate-500">
+            <p class="text-sm">Bu uygulama, namaz vakitlerini tahmini olarak gösterir. Kesin vakitler için yerel cami veya Diyanet İşleri Başkanlığı'nın kaynaklarına bakınız.</p>
+            <p class="mt-2 text-xs">&copy; 2025 Namaz Vakitleri Uygulaması. Tüm hakları saklıdır.</p>
         </div>
     </footer>
 
@@ -198,7 +238,9 @@
         const playAudioBtn = document.getElementById('play-audio-btn');
         const audioPlayer = document.getElementById('audio-player');
         
-        // API anahtarını tanımlıyoruz.
+        // API anahtarını tanımlıyoruz. NOT: Bu kısım Canvas içinde otomatik olarak çalışır.
+        // Fakat GitHub Pages gibi yerlerde API anahtarı olmadığı için çalışmayacaktır.
+        // Bu yüzden, sunucu tarafında bir API anahtarı tanımlamanız veya Netlify/Vercel gibi bir platform kullanmanız gerekir.
         const apiKey = "";
         
         // Namaz vakitlerini güncelleyen fonksiyon
@@ -227,7 +269,7 @@
             for (let i = 1; i < data.length; i++) {
                 const dayData = data[i];
                 const dayElement = document.createElement('div');
-                dayElement.className = 'flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200';
+                dayElement.className = 'flex justify-between items-center p-4 bg-slate-50 rounded-xl shadow-sm border border-slate-200';
                 dayElement.innerHTML = `
                     <div class="font-medium text-slate-600">${dayData.date}</div>
                     <div class="flex space-x-2 text-sm text-slate-500">
@@ -249,8 +291,17 @@
             messageDisplay.classList.add('hidden');
             getMessageBtn.disabled = true;
 
+            // API anahtarı boşsa veya yoksa kullanıcıya bilgi ver.
+            if (!apiKey) {
+                console.error("API Anahtarı bulunamadı. Bu özellik sunucu tarafı desteği gerektirir.");
+                messageText.textContent = 'Bu özellik bir sunucu API anahtarı gerektirir ve GitHub Pages üzerinde çalışmayabilir. Lütfen Netlify gibi bir platform deneyin.';
+                messageDisplay.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+                getMessageBtn.disabled = false;
+                return;
+            }
+
             const currentCity = citySelect.options[citySelect.selectedIndex].text;
-            const currentPrayerTime = 'Bugün'; // Basitlik için sadece bugünün vakti
             const prompt = `Bugünkü ${currentCity} şehrinin namaz vakitleri için, İslami öğretilere, huzura ve duaya vurgu yapan, kısa (en fazla 30 kelime) ve ilham verici bir söz veya dua cümlesi oluştur. Örneğin, "Güneşin doğuşuyla birlikte, yeni bir güne şükürle başla." gibi.`;
             
             let chatHistory = [];
@@ -275,7 +326,7 @@
                     messageDisplay.classList.remove('hidden');
                 } else {
                     console.error('API yanıtı beklendiği gibi değil:', result);
-                    messageText.textContent = 'Bir hata oluştu, lütfen tekrar deneyin.';
+                    messageText.textContent = 'İlham verici bir söz alınamadı, lütfen tekrar deneyin.';
                     messageDisplay.classList.remove('hidden');
                 }
             } catch (error) {
@@ -292,6 +343,12 @@
         async function playAudio(text) {
             playAudioBtn.disabled = true;
             playAudioBtn.textContent = 'Yükleniyor...';
+
+            if (!apiKey) {
+                console.error("API Anahtarı bulunamadı. Bu özellik sunucu tarafı desteği gerektirir.");
+                playAudioBtn.textContent = 'Hata';
+                return;
+            }
 
             const payload = {
                 contents: [{
@@ -333,15 +390,15 @@
                     audioPlayer.play();
                 } else {
                     console.error('API ses verisi döndürmedi:', result);
-                    alert('Ses oynatılamıyor. Lütfen tekrar deneyin.');
+                    // alert('Ses oynatılamıyor. Lütfen tekrar deneyin.');
                 }
 
             } catch (error) {
                 console.error('TTS API çağrısı sırasında bir hata oluştu:', error);
-                alert('Ses oynatılamıyor. İnternet bağlantınızı kontrol edin.');
+                // alert('Ses oynatılamıyor. İnternet bağlantınızı kontrol edin.');
             } finally {
                 playAudioBtn.disabled = false;
-                playAudioBtn.textContent = 'Sesi Oynat �';
+                playAudioBtn.textContent = 'Sesi Oynat';
             }
         }
         
@@ -399,7 +456,6 @@
         // Event Listener'lar
         citySelect.addEventListener('change', (event) => {
             updatePrayerTimes(event.target.value);
-            // Şehir değişince AI içeriğini sıfırla
             messageText.textContent = '';
             messageDisplay.classList.add('hidden');
         });
